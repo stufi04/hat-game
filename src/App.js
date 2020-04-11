@@ -39,9 +39,9 @@ class App extends React.Component {
             }
         ).then(response => {
             return response.json()
-        }).then(json => {
-                console.log(json)
-                this.nextPath('/words/' + name + '/' + json['code'] + '/' + 'true')
+        }).then(code => {
+                console.log(code)
+                this.nextPath('/words/' + name + '/' + code + '/' + 'true')
             })
 
     }
