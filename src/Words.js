@@ -5,10 +5,12 @@ class Words extends React.Component {
 
     constructor(props) {
         super(props);
-        this.state = {words: ['', '', '', '', ''], name: this.props.match.params.player, code: this.props.match.params.code, host: this.props.match.params.host}
+        this.state = {words: ['', '', '', '', ''], name: this.props.match.params.player, code: this.props.match.params.code, host: this.props.match.params.host};
 
-        this.submitWords = this.submitWords.bind(this)
-        this.handleWordChange = this.handleWordChange.bind(this)
+        this.submitWords = this.submitWords.bind(this);
+        this.startGame = this.startGame.bind(this);
+        this.nextPath = this.nextPath.bind(this);
+        this.handleWordChange = this.handleWordChange.bind(this);
     }
 
     handleWordChange(index, event) {
@@ -21,16 +23,24 @@ class Words extends React.Component {
 
     }
 
+    nextPath(path) {
+        this.props.history.push(path);
+    }
+
+    startGame() {
+        this.nextPath('/game')
+    }
+
 
     render() {
 
-        console.log(this.props.match.params)
+        console.log(this.props.match.params);
 
-        let buttons
+        let buttons;
         if (this.props.match.params.host == "true") {
             buttons = <div className="box">
                         <button onClick={this.submitWords}>Submit</button>
-                        <button style={{marginLeft: 50}} >Start</button>
+                        <button onClick={this.startGame} style={{marginLeft: 50}} >Start</button>
                     </div>
         } else {
             buttons = <button>Submit</button>
@@ -39,16 +49,15 @@ class Words extends React.Component {
 
         let inputs = this.state.words.map((word, index) => {
             return (
-                <div>
+                <div key={index}>
                 <input type="text"
                        value={word}
-                       key={index}
                        style={{marginBottom: 20}}
                        onChange={this.handleWordChange.bind(this,index)}
                 />
                 </div>
             );
-        })
+        });
 
 
         return (

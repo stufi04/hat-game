@@ -5,6 +5,7 @@ import './index.css';
 import './custom.scss';
 import App from './App';
 import Words from './Words';
+import Game from './Game';
 import * as serviceWorker from './serviceWorker';
 
 const routing = (
@@ -12,6 +13,7 @@ const routing = (
         <div>
             <Route exact path="/" component={App} />
             <Route path="/words/:player/:code/:host" component={Words} />
+            <Route path="/game" component={Game} />
         </div>
     </Router>
 )
