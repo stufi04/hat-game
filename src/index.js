@@ -1,13 +1,23 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import { Route, Link, BrowserRouter as Router } from 'react-router-dom';
 import './index.css';
+import './custom.scss';
 import App from './App';
+import Words from './Words';
 import * as serviceWorker from './serviceWorker';
 
+const routing = (
+    <Router>
+        <div>
+            <Route exact path="/" component={App} />
+            <Route path="/words/:player/:code/:host" component={Words} />
+        </div>
+    </Router>
+)
+
 ReactDOM.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
+  routing,
   document.getElementById('root')
 );
 
