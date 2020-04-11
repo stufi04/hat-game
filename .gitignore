@@ -4,6 +4,12 @@
 /node_modules
 /.pnp
 .pnp.js
+/api/venv
+/api/.idea
+
+# compile
+/api/__pycache__
+*.pyc
 
 # testing
 /coverage
