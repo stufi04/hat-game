@@ -30,12 +30,11 @@ def join_game():
     name = request.json['name']
     code = request.json['code']
     print(name, code)
-    for game in games:
-        print(game.code)
-        if game.code == code:
-            game.add_player(name)
-            return {'joined game': True}
-    return {'joined game': False}
+    game = games[code]
+    if game.get_code() == code:
+        game.add_player(name)
+        return jsonify({'joined game': True})
+    return jsonify({'joined game': False})
 
 @app.route('/<code>/words}', methods=['POST'])
 def post_words(code):
