@@ -35,7 +35,7 @@ class Game:
 
     def start_game(self):
         if self.game_state == 'LOBBY' and len(self.players) >= MIN_PLAYERS and len(self.players) % 2 == 0:
-            number_of_teams = len(self.players) / 2
+            number_of_teams = len(self.players) // 2
             self._assign_teams(number_of_teams)
             self.current_player_index = 0
             self.current_team_turn = self.team_split_players[0][1]
