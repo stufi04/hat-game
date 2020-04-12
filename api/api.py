@@ -50,7 +50,7 @@ def start_game(code):
 
 @app.route('/<code>/next-word', methods=['GET'])
 def next_word(code):
-    return game[code].peek_next_word()
+    return games[code].peek_next_word()
 
 if __name__ == '__main__':
     app.run()

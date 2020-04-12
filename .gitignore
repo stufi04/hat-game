@@ -5,6 +5,9 @@
 /.pnp
 .pnp.js
 /api/venv
+
+# ide
+.vscode
 /api/.idea
 
 # compile
