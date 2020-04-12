@@ -13,11 +13,11 @@ class Game extends React.Component {
 
         return (
             <div className="App">
-                <div className="container">
+                <div className="main-container">
                     <div className="main">
                         <h3>Georgi's turn</h3>
                         <br/>
-                        <h1>динозавър</h1>
+                        <h1 style={{marginTop: 100, marginBottom: 100}}>динозавър</h1>
                         <br/>
                         <h3>45s</h3>
                     </div>

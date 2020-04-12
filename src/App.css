@@ -37,7 +37,7 @@
   }
 }
 
-.container {
+.main-container {
   display: flex;
   flex-direction: row;
   background-color: #282c34;
@@ -47,6 +47,9 @@
   justify-content: center;
   min-height: 100vh;
   min-width: 100vh;
+  margin-left: 0;
+  margin-right: 0;
+  width: 100%;
 }
 
 .main {
