@@ -1,3 +1,4 @@
+import json
 import random
 from itertools import cycle 
 
@@ -12,10 +13,10 @@ class Game:
         self.players = []
         self.team_split_players = []
 
-        self.team_scores = {"team_one" : 0, "team_two" : 0}
-
         self.unplayed_words = []
         self.played_words = []
+
+        self.team_scores = {}
 
         self.game_state = 'LOBBY'
         self.round_number = 1
@@ -33,11 +34,12 @@ class Game:
             self.unplayed_words.append(word)
 
     def start_game(self):
-        if self.game_state == 'LOBBY' and len(self.players) >= MIN_PLAYERS :
-            self.game_state = 'PLAYING'
-            self._assign_teams()
+        if self.game_state == 'LOBBY' and len(self.players) >= MIN_PLAYERS and len(self.players) % 2 == 0:
+            number_of_teams = len(self.players) / 2
+            self._assign_teams(number_of_teams)
             self.current_player_index = 0
             self.current_team_turn = self.team_split_players[0][1]
+            self.game_state = 'PLAYING'
             return True
         return False
 
@@ -69,13 +71,16 @@ class Game:
         return self.players
 
     def get_teams(self):
-        return self._get_team("team_one"), self._get_team("team_two")
+        return [self._get_team(team_number) for team_number in range(1, (len(self.players) / 2) + 1)]
 
     def get_team_scores(self):
         return self.team_scores
     
     def get_current_player(self):
-        return self.team
+        return self.team_split_players[self.current_player_index][0]
+
+    def get_current_team(self):
+        return self.team_split_players[self.current_player_index][1]
 
     def get_game_state(self):
         return self.game_state
@@ -85,9 +90,10 @@ class Game:
     def __str__(self):
         return 'Game[{}] : players={}, state={}, team_scores={}, teams={}'.format(self.code, self.players, self.game_state, self.team_scores, self.team_split_players)
 
-    def _assign_teams(self):
+    def _assign_teams(self, number_of_teams):
         random.shuffle(self.players)
-        self.team_split_players = list(zip(self.players, cycle(["team_one","team_two"])))
+        self.team_split_players = list(zip(self.players, cycle(range(1, number_of_teams + 1))))
+        self.team_scores = {team : 0 for team in range(1, number_of_teams + 1)}
 
     def _get_team(self, team):
         tuple_list = self.search_tuple(self.team_split_players, team)
@@ -95,3 +101,6 @@ class Game:
 
     def search_tuple(self, tups, elem):
         return list(filter(lambda tup: elem in tup, tups))
+
+    def to_json(self):
+        return json.dumps(self, default=lambda o: o.__dict__)
