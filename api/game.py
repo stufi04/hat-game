@@ -33,11 +33,13 @@ class Game:
             self.unplayed_words.append(word)
 
     def start_game(self):
-        if self.game_state == 'LOBBY' and len(self.players) > MIN_PLAYERS :
+        if self.game_state == 'LOBBY' and len(self.players) >= MIN_PLAYERS :
             self.game_state = 'PLAYING'
             self._assign_teams()
             self.current_player_index = 0
             self.current_team_turn = self.team_split_players[0][1]
+            return True
+        return False
 
     # Game playing
 
@@ -92,7 +94,4 @@ class Game:
         return [a_tuple[0] for a_tuple in tuple_list]
 
     def search_tuple(self, tups, elem):
-	    return list(filter(lambda tup: elem in tup, tups))
-        
-
-    
+        return list(filter(lambda tup: elem in tup, tups))

@@ -17,7 +17,7 @@ def game_state_debug(code):
 @app.route('/new-game', methods=['POST'])
 def new_game():
     print('Starting new game')
-    print(len(games))
+    print('Games: ', len(games))
     numbers = random.sample(range(10), 4)
     code = ''.join([str(num) for num in numbers])
     new_game = Game(request.json, code)
@@ -36,13 +36,19 @@ def join_game():
         return jsonify({'joined game': True})
     return jsonify({'joined game': False})
 
-@app.route('/<code>/words}', methods=['POST'])
+@app.route('/<code>/words', methods=['POST'])
 def post_words(code):
-    games[code].post_words(request.json)
     for word in request.json:
         games[code].add_word(word)
+    print(games[code].unplayed_words)
+    return jsonify({'result': 'success'})
 
-@app.route('/<code>/next_word', methods=['GET'])
+@app.route('/<code>/start-game', methods=['GET'])
+def start_game(code):
+    return jsonify({'started game': games[code].start_game()})
+
+
+@app.route('/<code>/next-word', methods=['GET'])
 def next_word(code):
     return game[code].peek_next_word(request.json)
 
