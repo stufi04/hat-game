@@ -41,7 +41,7 @@ class Game:
             self.current_player_index = 0
             self.current_team_turn = self.team_split_players[0][1]
             self.game_state = 'PLAYING'
-            socketio.emit('game_started', self.__dict__, room='GameRoom_{code}'.format(code=self.code))
+            socketio.emit('game_started', { 'code': self.code }, room='GameRoom_{code}'.format(code=self.code))
             return True
         return False
 
