@@ -1,4 +1,4 @@
-from game import Game
+from hat.game import Game
 
 game = Game("Guci", 1234)
 

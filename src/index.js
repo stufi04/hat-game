@@ -13,14 +13,14 @@ const routing = (
         <div>
             <Route exact path="/" component={App} />
             <Route path="/words/:player/:code/:host" component={Words} />
-            <Route path="/game" component={Game} />
+            <Route path="/game/:player/:code" component={Game} />
         </div>
     </Router>
 )
 
 ReactDOM.render(
-  routing,
-  document.getElementById('root')
+    routing,
+    document.getElementById('root')
 );
 
 // If you want your app to work offline and load faster, you can change

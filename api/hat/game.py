@@ -1,12 +1,13 @@
 import json
 import random
-from itertools import cycle 
-
-MAX_PLAYERS = 8
-MIN_PLAYERS = 2
-
+from itertools import cycle
+from hat import socketio
 
 class Game:
+
+    max_players = 8
+    min_players = 2
+    games = {}
 
     def __init__(self, player, code):
         self.code = code
@@ -26,7 +27,7 @@ class Game:
     # Game setup 
 
     def add_player(self, player):
-        if len(self.players) < MAX_PLAYERS and self.game_state == 'LOBBY':
+        if len(self.players) < Game.max_players and self.game_state == 'LOBBY':
             self.players.append(player)
 
     def add_word(self, word):
@@ -34,12 +35,13 @@ class Game:
             self.unplayed_words.append(word)
 
     def start_game(self):
-        if self.game_state == 'LOBBY' and len(self.players) >= MIN_PLAYERS and len(self.players) % 2 == 0:
+        if self.game_state == 'LOBBY' and len(self.players) >= Game.min_players and len(self.players) % 2 == 0:
             number_of_teams = len(self.players) // 2
             self._assign_teams(number_of_teams)
             self.current_player_index = 0
             self.current_team_turn = self.team_split_players[0][1]
             self.game_state = 'PLAYING'
+            socketio.emit('game_started', self.__dict__, room='GameRoom_{code}'.format(code=self.code))
             return True
         return False
 

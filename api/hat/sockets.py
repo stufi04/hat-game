@@ -1,0 +1,31 @@
+from flask import request
+from flask_socketio import join_room, leave_room, send
+from hat import socketio
+
+@socketio.on('connect')
+def on_connect():
+    print('user with session id {session_id} has connected!'.format(session_id=request.sid))
+
+@socketio.on('disconnect')
+def on_disconnect():
+    print('user with session id {session_id} has disconnected!'.format(session_id=request.sid))
+
+@socketio.on('join_game')
+def on_join_game(json):
+    player_name = json['player_name']
+    game_code = json['game_code']
+    game_room = 'GameRoom_{}'.format(game_code)
+    join_room(room=game_room)
+    msg = 'Player {player_name} joined {game_room}'.format(player_name=player_name, game_room=game_room)
+    print(msg)
+    send(msg, room=game_room, broadcast=True)
+
+@socketio.on('leave_game')
+def on_leave_game(json):
+    player_name = json['player_name']
+    game_code = json['game_code']
+    game_room = 'GameRoom_{}'.format(game_code)
+    leave_room(room=game_room)
+    msg = 'Player {player_name} left {game_room}'.format(player_name=player_name, game_room=game_room)
+    print(msg)
+    send(msg, room=game_room, broadcast=True)
