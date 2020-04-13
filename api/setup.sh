@@ -17,5 +17,5 @@ source venv/bin/activate
 echo "Installing pipenv"
 pip install pipenv
 
-echo "Installing dependencies from Pipfile"
-pipenv install
+echo "Installing all package dependencies from Pipfile, including dev dependencies"
+pipenv install --dev
