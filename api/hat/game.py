@@ -70,6 +70,7 @@ class Game:
     def mark_word_as_guessed(self):
         self.team_scores[self.current_team_turn] = self.team_scores[self.current_team_turn] + 1
         self.played_words.append(self.unplayed_words.pop(0))
+        socketio.emit('update_leaderboard', { 'teams': self.teams, 'scores': self.team_scores }, room='GameRoom_{code}'.format(code=self.code))
 
     def start_next_player_turn(self):
         random.shuffle(self.unplayed_words)
