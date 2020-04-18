@@ -44,7 +44,7 @@ def post_words(code):
 def start_game(code):
     return jsonify({'started game': Game.games[code].start_game()})
 
-@app.route('/<code>/start-turn', methods=['GET'])
+@app.route('/<code>/load-turn', methods=['GET'])
 def start_turn(code):
     game = Game.games[code]
     return jsonify({
@@ -69,3 +69,9 @@ def mark_word_as_guessed(code):
         return next_word(code)
     else:
         raise Exception('Game flow error')
+
+@app.route('/<code>/play', methods=['GET'])
+def play(code):
+    game = Game.games[code]
+    game.notify_play_initiated()
+    return jsonify({'success': True})

@@ -1,4 +1,6 @@
 import React from 'react';
+import soundfile from './assets/the_alarm.mp3'
+import Timer from "./Timer";
 import './App.css';
 
 class Game extends React.Component {
@@ -14,6 +16,8 @@ class Game extends React.Component {
             turn: '',
             turnInProgress: false,
             word: '',
+            playAlarm: false,
+            showTimer: false,
             socket: this.props.gameEventsSocket,
         }
 
@@ -22,8 +26,10 @@ class Game extends React.Component {
         this.onUpdateLeaderboard = this.onUpdateLeaderboard.bind(this);
         this.whoseTurnIsIt = this.whoseTurnIsIt.bind(this);
         this.onPlay = this.onPlay.bind(this);
+        this.notifyPlayClicked = this.notifyPlayClicked.bind(this);
         this.peekFirstWord = this.peekFirstWord.bind(this);
         this.onNextWord = this.onNextWord.bind(this);
+        this.stopTimer = this.stopTimer.bind(this);
         this.isMyTurn = this.isMyTurn.bind(this);
     }
 
@@ -51,6 +57,17 @@ class Game extends React.Component {
             wordGuessedButton = <div></div>;
         }
 
+        let alert = null;
+        let myRef = React.createRef();
+        if (this.state.playAlarm) {
+           alert = <audio ref={myRef} src={soundfile} autoPlay/>
+        }
+
+        let timer = null;
+        if (this.state.showTimer) {
+            timer = <Timer stopTimer={this.stopTimer}/>
+        }
+
         return (
             <div className="App">
                 <div className="main-container">
@@ -63,7 +80,8 @@ class Game extends React.Component {
                         <br />
                         {wordGuessedButton}
                         <br />
-                        <h3>45s</h3>
+                        {timer}
+                        {alert}
                     </div>
                     <div className="leaderboard">
                         <h1>Leaderboard</h1>
@@ -74,16 +92,19 @@ class Game extends React.Component {
                 </div>
             </div>
         )
+
     }
 
     setUpGameListeners() {
         this.state.socket.on('update_leaderboard', this.onUpdateLeaderboard);
+
+        this.state.socket.on('play', this.setState({showTimer: true, playAlarm: false}))
     }
 
     nextTurn() {
 
         var code = this.state.code
-        var queryString = '/' + code + '/start-turn'
+        var queryString = '/' + code + '/load-turn'
 
         fetch(queryString, {
             method: "GET",
@@ -122,11 +143,40 @@ class Game extends React.Component {
     }
 
     onPlay() {
-        // TODO start timer 
         this.peekFirstWord();
         this.setState({ turnInProgress: true });
-        // TODO set turnInProgress to false when timer ends
-        // TODO notify others that round has started and show timers on their end
+        this.notifyPlayClicked()
+    }
+
+    stopTimer() {
+        this.setState({ turnInProgress: false, playAlarm: true, showTimer: false });
+        // TODO: if i'm the one whose turn it is , ask server to load next round (i.e. call prepare_next_player_turn in Python)
+        // the if is important - we can't make this http request from every player or the turn will be updated many times instead of one
+        // this can return the new state of the game
+        // BUT.. this new state needs to reach all players, not just the one whose turn it is
+        // so rather in the server prepare_next_player_turn will need to emit the state to everyone via the socket
+        // once state is emitted, on client side we can do the things i currently do in nextTurn()
+        // so we need to think if this can all be the same method, or current nextTurn() will be just firstTurn() instead
+    }
+
+    notifyPlayClicked() {
+
+        var code = this.state.code
+        var queryString = '/' + code + '/play'
+
+        fetch(queryString, {
+                method: "GET",
+                cache: "no-cache",
+                headers: {
+                    "Content-Type": "application/json",
+                }
+            }
+        ).then(response => {
+            return response.json()
+        }).then(json => {
+            console.log(json)
+        })
+
     }
 
     peekFirstWord() {
