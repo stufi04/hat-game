@@ -1,19 +1,23 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import io from 'socket.io-client';
 import { Route, Link, BrowserRouter as Router } from 'react-router-dom';
 import './index.css';
 import './custom.scss';
 import App from './App';
 import Words from './Words';
-import Game from './Game';
 import * as serviceWorker from './serviceWorker';
+import Game from "./Game";
+
+
+let gameEventsSocket = io();
 
 const routing = (
     <Router>
         <div>
             <Route exact path="/" component={App} />
-            <Route path="/words/:player/:code/:host" component={Words} />
-            <Route path="/game/:player/:code" component={Game} />
+            <Route path="/words/:player/:code/:host" render={ (props) => <Words {...props} gameEventsSocket={gameEventsSocket} /> } />
+            <Route path="/game/:player/:code" render={ (props) => <Game {...props} gameEventsSocket={gameEventsSocket} /> } />
         </div>
     </Router>
 )

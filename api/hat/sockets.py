@@ -1,6 +1,7 @@
 from flask import request
 from flask_socketio import join_room, leave_room, send
 from hat import socketio
+from hat.game import Game
 
 @socketio.on('connect')
 def on_connect():

@@ -13,6 +13,7 @@ class Game:
         self.code = code
         self.players = []
         self.team_split_players = []
+        self.teams = []
 
         self.unplayed_words = []
         self.played_words = []
@@ -35,15 +36,28 @@ class Game:
             self.unplayed_words.append(word)
 
     def start_game(self):
+        print(self.game_state, self.players)
         if self.game_state == 'LOBBY' and len(self.players) >= Game.min_players and len(self.players) % 2 == 0:
             number_of_teams = len(self.players) // 2
             self._assign_teams(number_of_teams)
             self.current_player_index = 0
             self.current_team_turn = self.team_split_players[0][1]
+            self.teams = self._set_team_names()
             self.game_state = 'PLAYING'
-            socketio.emit('game_started', { 'code': self.code }, room='GameRoom_{code}'.format(code=self.code))
+            socketio.emit('game_started', {'code': self.code}, room='GameRoom_{code}'.format(code=self.code))
             return True
         return False
+
+    def _set_team_names(self):
+        teams = []
+        for idx, score in self.team_scores.items():
+            current_team = []
+            for (player, team) in self.team_split_players:
+                if team == idx:
+                    current_team.append(player)
+            team_name = '{} & {}'.format(current_team[0], current_team[1])
+            teams.append(team_name)
+        return teams
 
     # Game playing
 

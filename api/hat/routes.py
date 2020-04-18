@@ -44,6 +44,17 @@ def post_words(code):
 def start_game(code):
     return jsonify({'started game': Game.games[code].start_game()})
 
+@app.route('/<code>/start-turn', methods=['GET'])
+def start_turn(code):
+    game = Game.games[code]
+    return jsonify({
+        'players'       : game.players,
+        'teams'         : game.teams,
+        'scores'        : game.team_scores,
+        'current_player': game.current_player_index,
+        'current_team'  : game.current_team_turn
+    })
+
 @app.route('/<code>/next-word', methods=['GET'])
 def next_word(code):
     return Game.games[code].peek_next_word()
