@@ -1,5 +1,4 @@
 import React from 'react';
-import io from 'socket.io-client';
 import './App.css';
 
 class Words extends React.Component {
@@ -13,6 +12,7 @@ class Words extends React.Component {
             name: this.props.match.params.player,
             code: this.props.match.params.code,
             host: this.props.match.params.host,
+            socket: this.props.gameEventsSocket,
         };
 
         this.submitWords = this.submitWords.bind(this);
@@ -84,35 +84,26 @@ class Words extends React.Component {
 
     connectToGameRoom() {
 
-        let socket = this.props.gameEventsSocket;
+        console.log('joining game room');
 
-        console.log(socket)
-
-        socket = io.connect('http://127.0.0.1:5000');
-
-        socket.on('connect', () =>
-            socket.emit('join_game', {
-                player_name: this.state.name,
-                game_code: this.state.code
-            })
-        );
-
-
-        socket.on('message', (message) => console.log('SocketIO Message: ' + message));
-
-        socket.on('game_started', (json) => {
-
-            console.log('Game started event received:');
-            console.log(json);
-
-            if (json.code === this.state.code) { // safeguard
-                this.nextPath(`/game/${this.state.name}/${this.state.code}`);
-            } else { // this must never happen as we use flask-socketio rooms and connect to a game room per game
-                console.error(`Unexpected game_started event received - current code=${this.state.code}, received code=${json.code}`);
-            }
-
+        this.state.socket.emit('join_game', {
+            player_name: this.state.name,
+            game_code: this.state.code
         });
 
+        this.state.socket.on('game_started', this.onGameStarted.bind(this));
+
+    }
+
+    onGameStarted(json) {
+        console.log('Game started event received:');
+        console.log(json);
+
+        if (json.code === this.state.code) { // safeguard
+            this.nextPath(`/game/${this.state.name}/${this.state.code}`);
+        } else { // this must never happen as we use flask-socketio rooms and connect to a game room per game
+            console.error(`Unexpected game_started event received - current code=${this.state.code}, received code=${json.code}`);
+        }
     }
 
     render() {

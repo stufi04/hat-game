@@ -57,4 +57,15 @@ def start_turn(code):
 
 @app.route('/<code>/next-word', methods=['GET'])
 def next_word(code):
-    return Game.games[code].peek_next_word()
+    return jsonify({ 'next_word': Game.games[code].peek_next_word() })
+
+@app.route('/<code>/mark-word-as-guessed', methods=['POST'])
+def mark_word_as_guessed(code):
+    game = Game.games[code]
+    word = request.json['word']
+
+    if (word == game.peek_next_word()):
+        game.mark_word_as_guessed()
+        return next_word(code)
+    else:
+        raise Exception('Game flow error')
