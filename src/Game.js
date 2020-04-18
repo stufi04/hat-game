@@ -17,14 +17,14 @@ class Game extends React.Component {
             socket: this.props.gameEventsSocket,
         }
 
-        this.setUpGameListeners = this._setUpGameListeners.bind(this);
-        this.nextTurn = this._nextTurn.bind(this);
-        this.onUpdateLeaderboard = this._onUpdateLeaderboard.bind(this);
-        this.whoseTurnIsIt = this._whoseTurnIsIt.bind(this);
-        this.onPlay = this._onPlay.bind(this);
-        this.peekFirstWord = this._peekFirstWord.bind(this);
-        this.onNextWord = this._onNextWord.bind(this);
-        this.isMyTurn = this._isMyTurn.bind(this);
+        this.setUpGameListeners = this.setUpGameListeners.bind(this);
+        this.nextTurn = this.nextTurn.bind(this);
+        this.onUpdateLeaderboard = this.onUpdateLeaderboard.bind(this);
+        this.whoseTurnIsIt = this.whoseTurnIsIt.bind(this);
+        this.onPlay = this.onPlay.bind(this);
+        this.peekFirstWord = this.peekFirstWord.bind(this);
+        this.onNextWord = this.onNextWord.bind(this);
+        this.isMyTurn = this.isMyTurn.bind(this);
     }
 
     componentDidMount() {
@@ -42,9 +42,9 @@ class Game extends React.Component {
         let wordDisplay;
         let wordGuessedButton;
         if (this.isMyTurn()) {
-            playButton = <div><button disabled={this.state.turnInProgress} onClick={this.onPlay}>Play</button></div>;
+            playButton = <div><button hidden={this.state.turnInProgress} onClick={this.onPlay}>Play</button></div>;
             wordDisplay = <span>{this.state.word}</span>;
-            wordGuessedButton = <div><button disabled={!this.state.turnInProgress} onClick={this.onNextWord}>Next Word</button></div>
+            wordGuessedButton = <div><button hidden={!this.state.turnInProgress} onClick={this.onNextWord}>Next Word</button></div>
         } else {
             playButton = <div></div>;
             wordDisplay = <span></span>;
@@ -76,11 +76,11 @@ class Game extends React.Component {
         )
     }
 
-    _setUpGameListeners() {
+    setUpGameListeners() {
         this.state.socket.on('update_leaderboard', this.onUpdateLeaderboard);
     }
 
-    _nextTurn() {
+    nextTurn() {
 
         var code = this.state.code
         var queryString = '/' + code + '/start-turn'
@@ -102,7 +102,7 @@ class Game extends React.Component {
 
     }
 
-    _onUpdateLeaderboard(json) {
+    onUpdateLeaderboard(json) {
         const teams = json['teams']
         const scores = json['scores']
         let num_teams = teams.length
@@ -113,15 +113,15 @@ class Game extends React.Component {
         this.setState({ leaderboard: leaderboard });
     }
 
-    _whoseTurnIsIt(curIdx, players) {
+    whoseTurnIsIt(curIdx, players) {
         this.setState({ turn: players[curIdx] });
     }
 
-    _isMyTurn() {
+    isMyTurn() {
         return this.state.turn === this.state.player;
     }
 
-    _onPlay() {
+    onPlay() {
         // TODO start timer 
         this.peekFirstWord();
         this.setState({ turnInProgress: true });
@@ -129,7 +129,7 @@ class Game extends React.Component {
         // TODO notify others that round has started and show timers on their end
     }
 
-    _peekFirstWord() {
+    peekFirstWord() {
 
         if (this.isMyTurn()) { // safeguard, should not really happen
 
@@ -151,7 +151,7 @@ class Game extends React.Component {
 
     }
 
-    _onNextWord() {
+    onNextWord() {
 
         if (this.isMyTurn()) { // safeguard, should not really happen
 
