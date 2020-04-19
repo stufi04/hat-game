@@ -77,11 +77,18 @@ class Game:
         random.shuffle(self.unplayed_words)
         self.current_player_index = (self.current_player_index + 1) % len(self.players)
         player, self.current_team_turn = self.team_split_players[self.current_player_index]
+        game_data = {
+            'players': self.players,
+            'teams': self.teams,
+            'scores': self.team_scores,
+            'current_player': self.current_player_index,
+            'current_team': self.current_team_turn
+        }
+        socketio.emit('turn_loaded', game_data, room='GameRoom_{code}'.format(code=self.code))
 
         return player
 
     def notify_play_initiated(self):
-        self.prepare_next_player_turn()
         socketio.emit('play', {}, room='GameRoom_{code}'.format(code=self.code))
 
     # Getters
