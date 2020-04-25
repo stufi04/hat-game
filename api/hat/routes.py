@@ -5,7 +5,7 @@ from hat.game import Game
 
 @app.route('/')
 def index():
-    return render_template('index.html',)
+    return app.send_static_file('index.html')
 
 @app.route('/health', methods=['GET'])
 def health_check():
