@@ -37,19 +37,35 @@
   }
 }
 
-.main-container {
+.outer-container {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   background-color: #282c34;
   font-size: calc(10px + 2vmin);
   color: white;
   align-items: stretch;
-  justify-content: center;
   min-height: 100vh;
   min-width: 100vh;
   margin-left: 0;
   margin-right: 0;
   width: 100%;
+  marginTop: 75px;
+}
+
+.main-container {
+  display: flex;
+  flex-direction: row;
+  flex-grow: 2;
+  background-color: #282c34;
+  font-size: calc(10px + 2vmin);
+  color: white;
+  margin-left: 0;
+  margin-right: 0;
+  width: 100%;
+}
+
+.round-div {
+  height: 150px;
 }
 
 .main {
@@ -58,6 +74,7 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  marginBottom: 50px;
 }
 
 .leaderboard {
@@ -66,4 +83,5 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  marginBottom: 50px;
 }

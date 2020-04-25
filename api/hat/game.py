@@ -74,6 +74,7 @@ class Game:
         socketio.emit('update_leaderboard', { 'teams': self.teams, 'scores': self.team_scores }, room='GameRoom_{code}'.format(code=self.code))
 
     def prepare_next_player_turn(self):
+        print('Preparing next player turn')
         random.shuffle(self.unplayed_words)
         self.current_player_index = (self.current_player_index + 1) % len(self.players)
         player, self.current_team_turn = self.team_split_players[self.current_player_index]
@@ -82,11 +83,18 @@ class Game:
             'teams': self.teams,
             'scores': self.team_scores,
             'current_player': self.current_player_index,
-            'current_team': self.current_team_turn
+            'current_team': self.current_team_turn,
+            'round': self.round_number
         }
         socketio.emit('turn_loaded', game_data, room='GameRoom_{code}'.format(code=self.code))
 
         return player
+
+    def next_round(self):
+        self.round_number += 1
+        self.unplayed_words = self.played_words
+        self.played_words = []
+        self.prepare_next_player_turn()
 
     def notify_play_initiated(self):
         socketio.emit('play', {}, room='GameRoom_{code}'.format(code=self.code))

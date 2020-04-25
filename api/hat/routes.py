@@ -53,7 +53,8 @@ def start_turn(code):
         'teams'         : game.teams,
         'scores'        : game.team_scores,
         'current_player': game.current_player_index,
-        'current_team'  : game.current_team_turn
+        'current_team'  : game.current_team_turn,
+        'round'         : game.round_number
     })
 
 @app.route('/<code>/prepare_turn', methods=['GET'])
@@ -67,6 +68,13 @@ def prepare_turn(code):
 def next_word(code):
     print('Next word clicked')
     return jsonify({ 'next_word': Game.games[code].peek_next_word() })
+
+@app.route('/<code>/next-round', methods=['GET'])
+def next_round(code):
+    print('Preparing next round')
+    game = Game.games[code]
+    game.next_round()
+    return jsonify({'success': True})
 
 @app.route('/<code>/mark-word-as-guessed', methods=['POST'])
 def mark_word_as_guessed(code):

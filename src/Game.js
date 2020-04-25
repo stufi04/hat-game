@@ -18,6 +18,8 @@ class Game extends React.Component {
             word: '',
             playAlarm: false,
             socket: this.props.gameEventsSocket,
+            round: 1,
+            gameOver: false
         }
 
         this.setUpGameListeners = this.setUpGameListeners.bind(this);
@@ -32,6 +34,7 @@ class Game extends React.Component {
         this.stopTimer = this.stopTimer.bind(this);
         this.isMyTurn = this.isMyTurn.bind(this);
         this.playStarted = this.playStarted.bind(this);
+        this.nextRound = this.nextRound.bind(this);
     }
 
     componentDidMount() {
@@ -50,7 +53,7 @@ class Game extends React.Component {
         let wordGuessedButton;
         if (this.isMyTurn()) {
             playButton = <div><button hidden={this.state.turnInProgress} onClick={this.onPlay} style={{marginTop: 40}}>Play</button></div>;
-            wordDisplay = <h1 style={{marginTop: 40}}>{this.state.word}</h1>;
+            wordDisplay = <h1 style={{marginTop: 40}} hidden={!this.state.turnInProgress}>{this.state.word}</h1>;
             wordGuessedButton = <div><button hidden={!this.state.turnInProgress} onClick={this.onNextWord} style={{marginTop: 40}}>Next Word</button></div>
         } else {
             playButton = <div></div>;
@@ -71,20 +74,26 @@ class Game extends React.Component {
 
         return (
             <div className="App">
-                <div className="main-container">
-                    <div className="main">
-                        <h3>{this.state.turn}'s turn</h3>
-                        {wordDisplay}
-                        {playButton}
-                        {wordGuessedButton}
-                        {timer}
-                        {alert}
+                <div className="outer-container">
+                    <div className="round-div">
+                        <h1 hidden={!this.state.gameOver}>Game over</h1>
+                        <h1 hidden={this.state.gameOver} style={{marginTop: 75}}>Round {this.state.round}</h1>
                     </div>
-                    <div className="leaderboard">
-                        <h1>Leaderboard</h1>
-                        <ol>
-                            {this.state.leaderboard.map((team) => <li key={team}>{team}</li>)}
-                        </ol>
+                    <div className="main-container">
+                        <div className="main" hidden={this.state.gameOver} >
+                            <h3>{this.state.turn}'s turn</h3>
+                            {wordDisplay}
+                            {playButton}
+                            {wordGuessedButton}
+                            {timer}
+                            {alert}
+                        </div>
+                        <div className="leaderboard">
+                            <h1>Leaderboard</h1>
+                            <ol>
+                                {this.state.leaderboard.map((team) => <li key={team}>{team}</li>)}
+                            </ol>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -163,8 +172,12 @@ class Game extends React.Component {
 
         let curIdx = json['current_player']
         let players = json['players']
-        this.setState({ turn: players[curIdx] });
-
+        let round = json['round']
+        if (round <= 3) {
+            this.setState({turnInProgress: false, turn: players[curIdx], round: round});
+        } else {
+            this.setState({turnInProgress: false, turn: players[curIdx], gameOver: true});
+        }
         console.log(this.state)
     }
 
@@ -287,11 +300,37 @@ class Game extends React.Component {
             }).then(response => {
                 return response.json();
             }).then(json => {
-                this.setState({ word: json['next_word'] });
+                this.setState({word: json['next_word']});
+                if (this.state.word == 'NO MORE WORDS') {
+                    //this.setState({turnInProgress: false})
+                    //await new Promise(r => setTimeout(r, 3000));
+                    this.nextRound();
+                }
                 console.log(this.state)
             });
 
         }
+
+    }
+
+    nextRound() {
+
+        console.log('Prepare next round')
+
+        var queryString = `/${this.state.code}/next-round`;
+
+        fetch(queryString, {
+            method: "GET",
+            cache: "no-cache",
+            headers: {
+                "Content-Type": "application/json",
+            }
+        }).then(response => {
+            return response.json();
+        }).then(json => {
+            console.log(this.state)
+        });
+
 
     }
 
