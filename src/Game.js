@@ -76,7 +76,7 @@ class Game extends React.Component {
             <div className="App">
                 <div className="outer-container">
                     <div className="round-div">
-                        <h1 hidden={!this.state.gameOver}>Game over</h1>
+                        <h1 hidden={!this.state.gameOver} style={{marginTop: 75}}>Game over</h1>
                         <h1 hidden={this.state.gameOver} style={{marginTop: 75}}>Round {this.state.round}</h1>
                     </div>
                     <div className="main-container">
