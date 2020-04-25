@@ -44,8 +44,8 @@ def post_words(code):
 def start_game(code):
     return jsonify({'started game': Game.games[code].start_game()})
 
-@app.route('/<code>/load-turn', methods=['GET'])
-def start_turn(code):
+@app.route('/<code>/load-first-turn', methods=['GET'])
+def start_first_turn(code):
     print('Starting new round')
     game = Game.games[code]
     return jsonify({
@@ -57,11 +57,13 @@ def start_turn(code):
         'round'         : game.round_number
     })
 
-@app.route('/<code>/prepare_turn', methods=['GET'])
-def prepare_turn(code):
-    print('Preparing state for next turn')
+@app.route('/<code>/end-turn', methods=['GET'])
+def end_turn(code):
+    print('Ending turn')
     game = Game.games[code]
-    game.prepare_next_player_turn()
+    game.players_finished += 1
+    if game.players_finished == len(game.players):
+        game.prepare_next_player_turn()
     return jsonify({'success': True})
 
 @app.route('/<code>/next-word', methods=['GET'])

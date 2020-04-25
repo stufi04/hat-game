@@ -23,6 +23,8 @@ class Game:
         self.game_state = 'LOBBY'
         self.round_number = 1
 
+        self.players_finished = 0
+
         self.add_player(player)
 
     # Game setup 
@@ -78,6 +80,7 @@ class Game:
         random.shuffle(self.unplayed_words)
         self.current_player_index = (self.current_player_index + 1) % len(self.players)
         player, self.current_team_turn = self.team_split_players[self.current_player_index]
+        self.players_finished = 0
         game_data = {
             'players': self.players,
             'teams': self.teams,

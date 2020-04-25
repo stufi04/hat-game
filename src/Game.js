@@ -15,6 +15,7 @@ class Game extends React.Component {
             leaderboard: [],
             turn: '',
             turnInProgress: false,
+            turnFinished: false,
             word: '',
             playAlarm: false,
             socket: this.props.gameEventsSocket,
@@ -23,8 +24,6 @@ class Game extends React.Component {
         }
 
         this.setUpGameListeners = this.setUpGameListeners.bind(this);
-        this.nextTurn = this.nextTurn.bind(this);
-        this.prepareNextTurn = this.prepareNextTurn.bind(this);
         this.onUpdateLeaderboard = this.onUpdateLeaderboard.bind(this);
         this.whoseTurnIsIt = this.whoseTurnIsIt.bind(this);
         this.onPlay = this.onPlay.bind(this);
@@ -42,7 +41,24 @@ class Game extends React.Component {
         console.log(this.props)
 
         this.setUpGameListeners();
-        this.nextTurn();
+
+        var queryString = `/${this.state.code}/load-first-turn`;
+
+        fetch(queryString, {
+                method: "GET",
+                cache: "no-cache",
+                headers: {
+                    "Content-Type": "application/json",
+                }
+            }
+        ).then(response => {
+            return response.json()
+        }).then(json => {
+            console.log(json)
+            this.onUpdateLeaderboard(json)
+            this.whoseTurnIsIt(json)
+            console.log(this.state)
+        })
 
     }
 
@@ -52,7 +68,7 @@ class Game extends React.Component {
         let wordDisplay;
         let wordGuessedButton;
         if (this.isMyTurn()) {
-            playButton = <div><button hidden={this.state.turnInProgress} onClick={this.onPlay} style={{marginTop: 40}}>Play</button></div>;
+            playButton = <div><button hidden={this.state.turnInProgress || this.state.turnFinished} onClick={this.onPlay} style={{marginTop: 40}}>Play</button></div>;
             wordDisplay = <h1 style={{marginTop: 40}} hidden={!this.state.turnInProgress}>{this.state.word}</h1>;
             wordGuessedButton = <div><button hidden={!this.state.turnInProgress} onClick={this.onNextWord} style={{marginTop: 40}}>Next Word</button></div>
         } else {
@@ -124,42 +140,29 @@ class Game extends React.Component {
         console.log(this.state)
     }
 
-    nextTurn() {
-
-        console.log('Setting up first turn')
-        console.log(this.state)
-
-        var code = this.state.code
-        var queryString = '/' + code + '/load-turn'
-
-        fetch(queryString, {
-            method: "GET",
-            cache: "no-cache",
-            headers: {
-                "Content-Type": "application/json",
-            }
-        }
-        ).then(response => {
-            return response.json()
-        }).then(json => {
-            console.log(json)
-            this.onUpdateLeaderboard(json)
-            this.whoseTurnIsIt(json)
-            console.log(this.state)
-        })
-
-    }
-
     onUpdateLeaderboard(json) {
 
         console.log('Updating leaderboard')
 
-        const teams = json['teams']
+        const teams = json['teams'];
         const scores = json['scores']
+
+        let scores_array = Object.keys(scores).map(function(key) {
+            return [key, scores[key]];
+        });
+
+        scores_array.sort(function(first, second) {
+            return second[1] - first[1];
+        });
+
+        console.log(teams)
+        console.log(scores_array)
+
+
         let num_teams = teams.length
         var leaderboard = []
         for (var i = 0; i < num_teams; i++) {
-            leaderboard.push(teams[i] + ': ' + scores[i + 1])
+            leaderboard.push(teams[parseInt(scores_array[i][0]-1)] + ': ' + scores_array[i][1])
         }
         this.setState({ leaderboard: leaderboard });
 
@@ -174,7 +177,7 @@ class Game extends React.Component {
         let players = json['players']
         let round = json['round']
         if (round <= 3) {
-            this.setState({turnInProgress: false, turn: players[curIdx], round: round});
+            this.setState({turnInProgress: false, turnFinished: false, turn: players[curIdx], round: round});
         } else {
             this.setState({turnInProgress: false, turn: players[curIdx], gameOver: true});
         }
@@ -182,9 +185,6 @@ class Game extends React.Component {
     }
 
     isMyTurn() {
-
-        console.log('Checking if it is my turn')
-
         return this.state.turn === this.state.player;
     }
 
@@ -202,35 +202,21 @@ class Game extends React.Component {
 
         console.log('Stopping timer')
 
-        this.setState({ turnInProgress: false, playAlarm: true });
-        if (this.isMyTurn()) {
-            this.prepareNextTurn()
-        }
+        this.setState({ turnInProgress: false, turnFinished: true, playAlarm: true });
 
-        console.log(this.state)
-    }
-
-    prepareNextTurn() {
-
-        console.log('Preparing next turn')
-
-        var code = this.state.code
-        var queryString = '/' + code + '/prepare_turn'
+        var queryString = `/${this.state.code}/end-turn`;
 
         fetch(queryString, {
-                method: "GET",
-                cache: "no-cache",
-                headers: {
-                    "Content-Type": "application/json",
-                }
+            method: "GET",
+            cache: "no-cache",
+            headers: {
+                "Content-Type": "application/json",
             }
-        ).then(response => {
-            return response.json()
+        }).then(response => {
+            return response.json();
         }).then(json => {
-            console.log(json)
             console.log(this.state)
-        })
-
+        });
 
     }
 
