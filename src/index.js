@@ -9,7 +9,7 @@ import Words from './Words';
 import * as serviceWorker from './serviceWorker';
 import Game from "./Game";
 
-const gameEventsSocket = io('http://127.0.0.1:5000');
+const gameEventsSocket = io('http://words-in-a-hat.herokuapp.com/');
 gameEventsSocket.on('message', (message) => console.log('SocketIO Message: ' + message));
 
 const routing = (
