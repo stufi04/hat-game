@@ -1,0 +1,5 @@
+To test locally add the following in package.json:
+   "proxy": "http://127.0.0.1:5000/",
+To run locally:
+    start fronted: yarn dev
+    start server: yarn start-api

@@ -19,8 +19,8 @@
   "scripts": {
     "dev": "react-scripts start",
     "start": "serve -s build",
-    "start-api": "cd api && venv/bin/python api.py",
-    "start-api-win": "cd api && .\\venv\\Scripts\\python.exe api.py",
+    "start-api": "venv/bin/python api.py",
+    "start-api-win": ".\\venv\\Scripts\\python.exe api.py",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
