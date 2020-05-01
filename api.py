@@ -1,4 +1,4 @@
-from hat import app, socketio
+from api.hat import app, socketio
 
 if __name__ == '__main__':
     socketio.run(app, debug=True)
