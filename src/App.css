@@ -85,3 +85,7 @@
   align-items: center;
   marginBottom: 50px;
 }
+
+.my-modal {
+  max-width: 90% !important;
+}

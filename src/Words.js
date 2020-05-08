@@ -8,11 +8,12 @@ class Words extends React.Component {
         console.log('In Words')
         this.state = {
             words: ['', '', '', '', ''],
-            submitEnabled: true,
+            submitEnabled: false,
             name: this.props.match.params.player,
             code: this.props.match.params.code,
             host: this.props.match.params.host,
             socket: this.props.gameEventsSocket,
+            log: []
         };
 
         this.submitWords = this.submitWords.bind(this);
@@ -20,6 +21,8 @@ class Words extends React.Component {
         this.nextPath = this.nextPath.bind(this);
         this.handleWordChange = this.handleWordChange.bind(this);
         this.connectToGameRoom = this.connectToGameRoom.bind(this);
+        this.setUpGameListeners = this.setUpGameListeners.bind(this);
+        this.updateLog = this.updateLog.bind(this);
 
     }
 
@@ -27,12 +30,14 @@ class Words extends React.Component {
         console.log(this.state)
         console.log(this.props)
         this.connectToGameRoom();
+        this.setUpGameListeners();
     }
 
     handleWordChange(index, event) {
         var words = this.state.words.slice();
         words[index] = event.target.value;
-        this.setState({ words: words });
+        let emptyWords = words.every(w => w != '')
+        this.setState({ words: words, submitEnabled: emptyWords });
     }
 
     submitWords() {
@@ -46,7 +51,7 @@ class Words extends React.Component {
             headers: {
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify(this.state.words)
+            body: JSON.stringify({'words': this.state.words, 'player': this.state.name})
         }
         ).then(response => {
             return response.json()
@@ -91,7 +96,33 @@ class Words extends React.Component {
             game_code: this.state.code
         });
 
+    }
+
+    setUpGameListeners() {
+
         this.state.socket.on('game_started', this.onGameStarted.bind(this));
+
+        this.state.socket.on('player_joined', this.updateLog)
+
+        this.state.socket.on('words_submitted', this.updateLog)
+
+    }
+
+    updateLog(json) {
+
+        console.log(json)
+
+        let curEvent = json['event']
+        let player = json['player']
+
+        console.log(curEvent, player)
+
+        if (curEvent == 'joined') {
+            this.setState({log: this.state.log.push(player + ' just joined the game')})
+        } else if (curEvent == 'submit') {
+            this.setState({log: this.state.log.push(player + ' just submitted their words')})
+        }
+
 
     }
 
@@ -107,6 +138,8 @@ class Words extends React.Component {
     }
 
     render() {
+
+        console.log(this.state.log)
 
         let buttons;
         if (this.props.match.params.host == "true") {

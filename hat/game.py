@@ -32,6 +32,7 @@ class Game:
     def add_player(self, player):
         if len(self.players) < Game.max_players and self.game_state == 'LOBBY':
             self.players.append(player)
+            socketio.emit('player_joined', {'player': player, 'event': 'joined'}, room='GameRoom_{code}'.format(code=self.code))
 
     def add_word(self, word):
         if self.game_state == 'LOBBY':

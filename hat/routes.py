@@ -2,6 +2,7 @@ import random
 from flask import request, jsonify
 from hat import app
 from hat.game import Game
+from hat import socketio
 
 @app.route('/')
 def index():
@@ -39,8 +40,11 @@ def join_game():
 
 @app.route('/<code>/words', methods=['POST'])
 def post_words(code):
-    for word in request.json:
+    words = request.json['words']
+    player = request.json['player']
+    for word in words:
         Game.games[code].add_word(word)
+    socketio.emit('words_submitted', {'player': player, 'event': 'submit'}, room='GameRoom_{code}'.format(code=code))
     print(Game.games[code].unplayed_words)
     return jsonify({'result': 'success'})
 
