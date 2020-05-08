@@ -13,8 +13,9 @@ class Words extends React.Component {
             code: this.props.match.params.code,
             host: this.props.match.params.host,
             socket: this.props.gameEventsSocket,
-            log: []
-        };
+            players: [],
+            ready: []
+        }
 
         this.submitWords = this.submitWords.bind(this);
         this.startGame = this.startGame.bind(this);
@@ -110,18 +111,13 @@ class Words extends React.Component {
 
     updateLog(json) {
 
+        console.log('UPDATE')
         console.log(json)
 
-        let curEvent = json['event']
-        let player = json['player']
+        let players = json['players']
+        let ready = json['ready']
 
-        console.log(curEvent, player)
-
-        if (curEvent == 'joined') {
-            this.setState({log: this.state.log.push(player + ' just joined the game')})
-        } else if (curEvent == 'submit') {
-            this.setState({log: this.state.log.push(player + ' just submitted their words')})
-        }
+        this.setState({ players: players, ready: ready })
 
 
     }
@@ -139,13 +135,13 @@ class Words extends React.Component {
 
     render() {
 
-        console.log(this.state.log)
+        let startEnabled = this.state.ready.every(x => x == true)
 
         let buttons;
         if (this.props.match.params.host == "true") {
             buttons = <div className="box">
                 <button onClick={this.submitWords} disabled={!this.state.submitEnabled}>Submit</button>
-                <button onClick={this.startGame} style={{ marginLeft: 50 }} >Start</button>
+                <button onClick={this.startGame} style={{ marginLeft: 50 }} disabled={!startEnabled} >Start</button>
             </div>
         } else {
             buttons = <button onClick={this.submitWords} disabled={!this.state.submitEnabled}>Submit</button>
@@ -164,17 +160,33 @@ class Words extends React.Component {
             );
         });
 
+        let players = this.state.players.map( (player, index) => {
+            return (
+                <div key={index}>
+                    <label className={this.state.ready[index] ? 'ready' : null}>{player}</label>
+                </div>
+            )
+        })
 
         return (
             <div className="App">
-                <header className="App-header">
-                    <h1>{this.state.name}, add your words to the hat:</h1>
-                    <br />
-                    {inputs}
-                    {buttons}
-                    <br />
-                    <h3>Game code: {this.state.code}</h3>
-                </header>
+                <div className="outer-container">
+                    <div className="main-container">
+                        <div className="main" hidden={this.state.gameOver} >
+                            <h1>{this.state.name}, add your words to the hat:</h1>
+                            <br />
+                            {inputs}
+                            {buttons}
+                            <br />
+                            <h3>Game code: {this.state.code}</h3>
+                        </div>
+                        <div className="side">
+                            <h4>Players in this game:</h4>
+                            {players}
+                            <br/>
+                        </div>
+                    </div>
+                </div>
             </div>
         )
     }

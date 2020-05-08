@@ -12,6 +12,7 @@ class Game:
     def __init__(self, player, code):
         self.code = code
         self.players = []
+        self.players_ready = []
         self.team_split_players = []
         self.teams = []
 
@@ -30,13 +31,19 @@ class Game:
     # Game setup 
 
     def add_player(self, player):
+        print('adding player')
         if len(self.players) < Game.max_players and self.game_state == 'LOBBY':
             self.players.append(player)
-            socketio.emit('player_joined', {'player': player, 'event': 'joined'}, room='GameRoom_{code}'.format(code=self.code))
+            self.players_ready.append(False)
+            print('emmitting player_joined')
 
-    def add_word(self, word):
+
+    def add_words(self, player, words):
         if self.game_state == 'LOBBY':
-            self.unplayed_words.append(word)
+            self.unplayed_words += words
+        idx = self.players.index(player)
+        self.players_ready[idx] = True
+        socketio.emit('words_submitted', {'players': self.players, 'ready': self.players_ready}, room='GameRoom_{code}'.format(code=self.code))
 
     def start_game(self):
         print(self.game_state, self.players)

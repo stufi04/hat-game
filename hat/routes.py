@@ -42,9 +42,7 @@ def join_game():
 def post_words(code):
     words = request.json['words']
     player = request.json['player']
-    for word in words:
-        Game.games[code].add_word(word)
-    socketio.emit('words_submitted', {'player': player, 'event': 'submit'}, room='GameRoom_{code}'.format(code=code))
+    Game.games[code].add_words(player, words)
     print(Game.games[code].unplayed_words)
     return jsonify({'result': 'success'})
 

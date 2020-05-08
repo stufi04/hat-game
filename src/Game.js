@@ -104,7 +104,7 @@ class Game extends React.Component {
                             {timer}
                             {alert}
                         </div>
-                        <div className="leaderboard">
+                        <div className="side">
                             <h1>Leaderboard</h1>
                             <ol>
                                 {this.state.leaderboard.map((team) => <li key={team}>{team}</li>)}
