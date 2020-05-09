@@ -20,8 +20,12 @@ class Game extends React.Component {
             playAlarm: false,
             socket: this.props.gameEventsSocket,
             round: 1,
-            gameOver: false
+            gameOver: false,
+            players: []
         }
+
+        this.playButton = React.createRef();
+        this.nextButton = React.createRef();
 
         this.setUpGameListeners = this.setUpGameListeners.bind(this);
         this.onUpdateLeaderboard = this.onUpdateLeaderboard.bind(this);
@@ -55,6 +59,7 @@ class Game extends React.Component {
             return response.json()
         }).then(json => {
             console.log(json)
+            this.setState({players:  json['players']})
             this.onUpdateLeaderboard(json)
             this.whoseTurnIsIt(json)
             console.log(this.state)
@@ -62,58 +67,15 @@ class Game extends React.Component {
 
     }
 
-    render() {
+    componentDidUpdate(prevProps, prevState, snapshot) {
 
-        let playButton;
-        let wordDisplay;
-        let wordGuessedButton;
         if (this.isMyTurn()) {
-            playButton = <div><button hidden={this.state.turnInProgress || this.state.turnFinished} onClick={this.onPlay} style={{marginTop: 40}}>Play</button></div>;
-            wordDisplay = <h1 style={{marginTop: 40}} hidden={!this.state.turnInProgress}>{this.state.word}</h1>;
-            wordGuessedButton = <div><button hidden={!this.state.turnInProgress} onClick={this.onNextWord} style={{marginTop: 40}}>Next Word</button></div>
-        } else {
-            playButton = <div></div>;
-            wordDisplay = <span></span>;
-            wordGuessedButton = <div></div>;
+            if (this.state.turnInProgress) {
+                this.nextButton.current.focus()
+            } else {
+                this.playButton.current.focus()
+            }
         }
-
-        let alert = null;
-        let myRef = React.createRef();
-        if (this.state.playAlarm) {
-           alert = <audio ref={myRef} src={soundfile} autoPlay/>
-        }
-
-        let timer = null;
-        if (this.state.turnInProgress) {
-            timer = <Timer stopTimer={this.stopTimer}/>
-        }
-
-        return (
-            <div className="App">
-                <div className="outer-container">
-                    <div className="round-div">
-                        <h1 hidden={!this.state.gameOver} style={{marginTop: 75}}>Game over</h1>
-                        <h1 hidden={this.state.gameOver} style={{marginTop: 75}}>Round {this.state.round}</h1>
-                    </div>
-                    <div className="main-container">
-                        <div className="main" hidden={this.state.gameOver} >
-                            <h3>{this.state.turn}'s turn</h3>
-                            {wordDisplay}
-                            {playButton}
-                            {wordGuessedButton}
-                            {timer}
-                            {alert}
-                        </div>
-                        <div className="side">
-                            <h1>Leaderboard</h1>
-                            <ol>
-                                {this.state.leaderboard.map((team) => <li key={team}>{team}</li>)}
-                            </ol>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        )
 
     }
 
@@ -317,6 +279,70 @@ class Game extends React.Component {
             console.log(this.state)
         });
 
+
+    }
+
+    render() {
+
+        let playButton;
+        let wordDisplay;
+        let wordGuessedButton;
+        if (this.isMyTurn()) {
+            playButton = <div><button autoFocus ref={this.playButton} hidden={this.state.turnInProgress || this.state.turnFinished} onClick={this.onPlay} style={{marginTop: 40}}>Play</button></div>;
+            wordDisplay = <h1 style={{marginTop: 40}} hidden={!this.state.turnInProgress}>{this.state.word}</h1>;
+            wordGuessedButton = <div><button autoFocus ref={this.nextButton} hidden={!this.state.turnInProgress} onClick={this.onNextWord} style={{marginTop: 40}}>Next Word</button></div>
+        } else {
+            playButton = <div></div>;
+            wordDisplay = <span></span>;
+            wordGuessedButton = <div></div>;
+        }
+
+        let alert = null;
+        let myRef = React.createRef();
+        if (this.state.playAlarm) {
+            alert = <audio ref={myRef} src={soundfile} autoPlay/>
+        }
+
+        let timer = null;
+        if (this.state.turnInProgress) {
+            timer = <Timer stopTimer={this.stopTimer}/>
+        }
+
+        let message = <h5>Click when you are ready to begin your turn</h5>
+        if (!this.isMyTurn()) {
+            message = <h5>Waiting for {this.state.turn} to begin their turn...</h5>
+        }
+
+
+        return (
+            <div className="App">
+                <div className="outer-container">
+                    <div className="round-div">
+                        <h1 hidden={!this.state.gameOver} style={{marginTop: 75}}>Game over</h1>
+                        <h1 hidden={this.state.gameOver} style={{marginTop: 75}}>Round {this.state.round}</h1>
+                        <div hidden={this.state.gameOver} className="turns-labels">
+                            {this.state.players.map((player) => <label key={player} style={{marginLeft: 10}} className={this.state.turn == player ? 'indicator' : null}>{player}</label>)}
+                        </div>
+                    </div>
+                    <div className="main-container">
+                        <div className="main" hidden={this.state.gameOver} >
+                            {message}
+                            {wordDisplay}
+                            {playButton}
+                            {wordGuessedButton}
+                            {timer}
+                            {alert}
+                        </div>
+                        <div className="side">
+                            <h1>Leaderboard</h1>
+                            <ol>
+                                {this.state.leaderboard.map((team) => <li key={team}>{team}</li>)}
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        )
 
     }
 

@@ -65,7 +65,13 @@
 }
 
 .round-div {
-  height: 150px;
+  height: 250px;
+  flex-direction: column;
+}
+
+.turns-labels {
+  flex-direction: row;
+  margin-top: 50px;
 }
 
 .main {
@@ -74,7 +80,7 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  marginBottom: 50px;
+  margin-bottom: 150px;
 }
 
 .side {
@@ -83,13 +89,13 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  marginBottom: 50px;
+  margin-bottom: 150px;
 }
 
 .my-modal {
   max-width: 90% !important;
 }
 
-.ready {
+.indicator {
   color: yellow;
 }

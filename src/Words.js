@@ -1,6 +1,9 @@
 import React from 'react';
 import './App.css';
 
+const MIN_PLAYERS = 4
+const MAX_PLAYERS = 10
+
 class Words extends React.Component {
 
     constructor(props) {
@@ -135,7 +138,18 @@ class Words extends React.Component {
 
     render() {
 
-        let startEnabled = this.state.ready.every(x => x == true)
+        let startEnabled = this.state.ready.every(x => x == true) &&
+                           this.state.players.length >= MIN_PLAYERS && this.state.players.length <= MAX_PLAYERS &&
+                           this.state.players.length % 2 == 0
+
+        let message =  <h6>Waiting for players to submit words...</h6>
+        if (this.state.players.length < MIN_PLAYERS) {
+            message = <h6>Waiting for more  players to join...</h6>
+        } else if (this.state.players.length % 2  == 1) {
+            message = <h6>Game needs even number of players...</h6>
+        } else if (startEnabled) {
+            message = <h6>Waiting for host to start game...</h6>
+        }
 
         let buttons;
         if (this.props.match.params.host == "true") {
@@ -163,7 +177,7 @@ class Words extends React.Component {
         let players = this.state.players.map( (player, index) => {
             return (
                 <div key={index}>
-                    <label className={this.state.ready[index] ? 'ready' : null}>{player}</label>
+                    <label className={this.state.ready[index] ? 'indicator' : null}>{player}</label>
                 </div>
             )
         })
@@ -184,6 +198,7 @@ class Words extends React.Component {
                             <h4>Players in this game:</h4>
                             {players}
                             <br/>
+                            {message}
                         </div>
                     </div>
                 </div>

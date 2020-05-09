@@ -5,8 +5,8 @@ from hat import socketio
 
 class Game:
 
-    max_players = 8
-    min_players = 2
+    max_players = 10
+    min_players = 4
     games = {}
 
     def __init__(self, player, code):
