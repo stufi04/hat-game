@@ -185,9 +185,12 @@ class Words extends React.Component {
         return (
             <div className="App">
                 <div className="outer-container">
+                    <div className="upper-div">
+                        <h1 style={{marginTop: 75}}>Game Lobby</h1>
+                    </div>
                     <div className="main-container">
                         <div className="main" hidden={this.state.gameOver} >
-                            <h1>{this.state.name}, add your words to the hat:</h1>
+                            <h2>{this.state.name}, add your words to the hat:</h2>
                             <br />
                             {inputs}
                             {buttons}

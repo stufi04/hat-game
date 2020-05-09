@@ -317,7 +317,7 @@ class Game extends React.Component {
         return (
             <div className="App">
                 <div className="outer-container">
-                    <div className="round-div">
+                    <div className="upper-div">
                         <h1 hidden={!this.state.gameOver} style={{marginTop: 75}}>Game over</h1>
                         <h1 hidden={this.state.gameOver} style={{marginTop: 75}}>Round {this.state.round}</h1>
                         <div hidden={this.state.gameOver} className="turns-labels">

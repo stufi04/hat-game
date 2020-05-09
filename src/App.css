@@ -64,9 +64,16 @@
   width: 100%;
 }
 
-.round-div {
+.upper-div {
   height: 250px;
   flex-direction: column;
+}
+
+.upper-row {
+  display: flex;
+  flex-direction: row;
+  margin-top: 75px;
+  justify-content: space-between;
 }
 
 .turns-labels {
@@ -98,4 +105,19 @@
 
 .indicator {
   color: yellow;
+}
+
+.rules {
+  align-self: flex-end;
+  margin-right: 20px;
+  margin-bottom: 40px;
+}
+
+.title {
+  font-size: 60px;
+  font-weight: 500;
+}
+
+.dummy {
+  visibility: hidden;
 }

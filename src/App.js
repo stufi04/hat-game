@@ -87,23 +87,29 @@ class App extends React.Component {
 
         return (
             <div className="App">
-                <header className="App-header">
-                    <button style={{ marginLeft: "auto", marginRight: 50 }} onClick={this.toggleModal}>Rules</button>
-                    <h1> Words in a Hat </h1>
-                    <br />
-                    <p> Enter your name to play with friends: </p>
-                    <input type="text" value={this.state.value} onChange={this.handleNameChange}></input>
-                    <br />
-                    <br />
-                    <button disabled={this.state.name == ''} onClick={this.startGame}>New game</button>
-                    <p>or</p>
-                    <button disabled={this.state.name == '' || this.state.code == ''} onClick={this.joinGame}>Join game</button>
-                    <br />
-                    <div className="box">
-                        <label>code: </label>
-                        <input type="text" value={this.state.code} onChange={this.handleCodeChange}></input>
+                <div className="outer-container">
+                    <div className="upper-div">
+                        <div className="upper-row">
+                            <button className="dummy">Rules</button>
+                            <label className="title">Words in a Hat</label>
+                            <button className="rules" onClick={this.toggleModal}>Rules</button>
+                        </div>
                     </div>
-                </header>
+                    <div className="main">
+                        <p> Enter your name to play with friends: </p>
+                        <input type="text" value={this.state.value} onChange={this.handleNameChange}></input>
+                        <br />
+                        <br />
+                        <button disabled={this.state.name == ''} onClick={this.startGame}>New game</button>
+                        <p>or</p>
+                        <button disabled={this.state.name == '' || this.state.code == ''} onClick={this.joinGame}>Join game</button>
+                        <br />
+                        <div className="box">
+                            <label>code:  </label>
+                            <input type="text" value={this.state.code} onChange={this.handleCodeChange}></input>
+                        </div>
+                    </div>
+                </div>
 
                 <Modal dialogClassName="my-modal" tyle={{width:1000}} show={this.state.popup} onHide={this.toggleModal} aria-labelledby='ModalHeader'>
                     <Modal.Header closeButton>
