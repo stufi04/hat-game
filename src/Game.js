@@ -310,7 +310,7 @@ class Game extends React.Component {
 
         let message = <h5>Click when you are ready to begin your turn</h5>
         if (!this.isMyTurn()) {
-            message = <h5>Waiting for {this.state.turn} to begin their turn...</h5>
+            message = <h5>Waiting for {this.state.turn} to begin his/her turn...</h5>
         }
 
 
@@ -326,7 +326,7 @@ class Game extends React.Component {
                     </div>
                     <div className="main-container">
                         <div className="main" hidden={this.state.gameOver} >
-                            {message}
+                            {!this.state.turnInProgress ? message : null}
                             {wordDisplay}
                             {playButton}
                             {wordGuessedButton}
