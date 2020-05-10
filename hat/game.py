@@ -79,9 +79,10 @@ class Game:
             return "NO MORE WORDS"
 
     def mark_word_as_guessed(self):
+        word = self.unplayed_words.pop(0)
         self.team_scores[self.current_team_turn] = self.team_scores[self.current_team_turn] + 1
-        self.played_words.append(self.unplayed_words.pop(0))
-        socketio.emit('update_leaderboard', { 'teams': self.teams, 'scores': self.team_scores }, room='GameRoom_{code}'.format(code=self.code))
+        self.played_words.append(word)
+        socketio.emit('update_leaderboard', { 'teams': self.teams, 'scores': self.team_scores, 'word': word }, room='GameRoom_{code}'.format(code=self.code))
 
     def prepare_next_player_turn(self):
         print('Preparing next player turn')

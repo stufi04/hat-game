@@ -121,3 +121,20 @@
 .dummy {
   visibility: hidden;
 }
+
+@keyframes FadeAnimation {
+  0% {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  100% {
+    opacity: 0;
+    visibility: hidden;
+  }
+}
+
+.guessed-word {
+  animation-name: FadeAnimation;
+  animation-duration: 2.5s;
+}

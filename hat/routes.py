@@ -60,7 +60,8 @@ def start_first_turn(code):
         'scores'        : game.team_scores,
         'current_player': game.current_player_index,
         'current_team'  : game.current_team_turn,
-        'round'         : game.round_number
+        'round'         : game.round_number,
+        'word'          : ''
     })
 
 @app.route('/<code>/end-turn', methods=['GET'])

@@ -21,7 +21,9 @@ class Game extends React.Component {
             socket: this.props.gameEventsSocket,
             round: 1,
             gameOver: false,
-            players: []
+            players: [],
+            guessedWord: null,
+            animationDone: false
         }
 
         this.playButton = React.createRef();
@@ -107,7 +109,8 @@ class Game extends React.Component {
         console.log('Updating leaderboard')
 
         const teams = json['teams'];
-        const scores = json['scores']
+        const scores = json['scores'];
+        const word = json['word'];
 
         let scores_array = Object.keys(scores).map(function(key) {
             return [key, scores[key]];
@@ -126,7 +129,14 @@ class Game extends React.Component {
         for (var i = 0; i < num_teams; i++) {
             leaderboard.push(teams[parseInt(scores_array[i][0]-1)] + ': ' + scores_array[i][1])
         }
-        this.setState({ leaderboard: leaderboard });
+        this.setState({ leaderboard: leaderboard, guessedWord: word });
+
+
+        let cmpnt = this;
+
+        setTimeout(function () {
+            cmpnt.setState({ guessedWord: '' });
+        }, 2500);
 
         console.log(this.state)
     }
@@ -250,8 +260,6 @@ class Game extends React.Component {
             }).then(json => {
                 this.setState({word: json['next_word']});
                 if (this.state.word == 'NO MORE WORDS') {
-                    //this.setState({turnInProgress: false})
-                    //await new Promise(r => setTimeout(r, 3000));
                     this.nextRound();
                 }
                 console.log(this.state)
@@ -313,6 +321,13 @@ class Game extends React.Component {
             message = <h5>Waiting for {this.state.turn} to begin his/her turn...</h5>
         }
 
+        let guessedWord = null
+        if (!this.isMyTurn() && this.state.guessedWord != '' && this.state.guessedWord != null) {
+            guessedWord = <div className="guessed-word">
+                <h3>{this.state.turn} guessed the word</h3>
+                <h1>{this.state.guessedWord}</h1>
+            </div>
+        }
 
         return (
             <div className="App">
@@ -330,6 +345,7 @@ class Game extends React.Component {
                             {wordDisplay}
                             {playButton}
                             {wordGuessedButton}
+                            {guessedWord}
                             {timer}
                             {alert}
                         </div>
